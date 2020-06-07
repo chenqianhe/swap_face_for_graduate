@@ -1,41 +1,3 @@
-# 基于PaddlePaddle和PaddleHub的学士服换脸
-
-## 一、项目起因
-
-今年许多毕业生艰难的毕业，并且由于疫情的影响，他们可能都没办法拥有一张属于自己的毕业照。 在微博、朋友圈、空间都能看到许多人说遗憾。于是便有了这样一个学士服换脸的项目，祝福各位毕业生前程似锦，万事如意。
-
-## 二、效果展示
-
-原图：
-
-![test](https://ai-studio-static-online.cdn.bcebos.com/e208c25955b94637bacb9a9bea5567c748dacc3f82ac49cca62ddba1273ce44a)
-
-学士服照片：
-
-![bchelor](https://ai-studio-static-online.cdn.bcebos.com/f6212ba726ce4e1f85a72df952a1faceff6186b05bbd434b91d8577d9e3b7467)
-
-合成后的图：
-
-![new](https://ai-studio-static-online.cdn.bcebos.com/3b1f31aa6b904b88ba1cfa9dfe1ce48f0e6fdd24a6af47fcb6341f8b3d7a4282)
-
-可以看出效果很棒，并且选取不同的学士服照片，就能解锁不同场景下的学士服纪念照。
-
-最为重要的是，该程序可以自己下载到电脑运行，有GUI界面，简单易操作，保证不会泄露隐私。
-
-## 三、原理
-
-1. 使用PaddleHub的face_landmark_localization模型获取人脸图片im1和学士服图片im2的68个人脸特征点。
-2. 根据上一步获得的特征点得到两张图片的人脸掩模im1_mask和im2_mask。
-3. 利用68个特征点中的3个特征点，对人脸图片im1进行仿射变换使其脸部对准学士服图片中的脸部，得到图片affine_im1。
-4. 对人脸图片的掩模im1_mask也进行相同的仿射变换得到affine_im1_mask。
-5. 对掩模im2_mask和掩模affine_im1_mask的掩盖部分取并集得到union_mask。
-6. 利用opencv里的seamlessClone函数对仿射变换后的affine_im1和摄像头图片im2进行泊松融合，掩模为union_mask，得到融合后的图像seamless_im。
-
-![image-20200607215855198](https://ai-studio-static-online.cdn.bcebos.com/4ae905e8f82340918992ea9d0c89df792fdb8e24012d4bacbcbfe1aee29fb2eb)
-
-## 四、代码实现
-
-```python
 import cv2
 import numpy as np
 import paddlehub as hub
@@ -266,31 +228,3 @@ if __name__ == '__main__':
 
 
     main_box.mainloop()
-```
-
-## 五、GUI界面
-
-进入界面
-
-![image-20200607220036070](https://ai-studio-static-online.cdn.bcebos.com/5f565472899c460fa63b31103427f0ff25a8af55de0f4ec1a1459fa4705fb9d9)
-
-未选择路径提示：
-
-![image-20200607220100469](https://ai-studio-static-online.cdn.bcebos.com/2f750a7b50b94642a1fa21de2b78e792b5baee3e95674dd498556eee4c245b11)
-
-关闭提示：
-
-![image-20200607220213846](https://ai-studio-static-online.cdn.bcebos.com/e35c5daf51114c2e85b73491b949287e7d3dfb73c5a0486994be6b7abb4a48a6)
-
-成功提示：
-
-![image-20200607220241206](https://ai-studio-static-online.cdn.bcebos.com/83673ece4ccf4c9c965b4e8c674f03769af96fb6cc3d49c6ac8421ab5a63d150)
-
-
-
-## 六、对比分析
-
-拥有同样功能的库有dlib等。当然这也是最常用的一个视觉方面的库。他同样提供了类似的获取人脸关键点的模型，但是在使用过程中对电脑配置要求较高，使用常见的8G内存时，直接内存溢出，无法正常使用。而使用PaddleHub提供的模型则对配置要求较低，更适合普通群众使用和推广使用。
-
-
-
